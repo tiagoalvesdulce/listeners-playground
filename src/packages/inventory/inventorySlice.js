@@ -41,7 +41,19 @@ const inventorySlice = createSlice({
     builder.addCase(
       loadInventoryAsync.fulfilled,
       (state, { meta: { arg }, payload }) => {
-        state[arg] = [...state[arg], ...payload];
+        console.log(arg);
+        if (arg) {
+          state[arg] = [...state[arg], ...payload];
+        } else {
+          // This code will break if inventorypagesize changes and it's here for testing purposes
+          state["unreviewed"] = [
+            ...state["unreviewed"],
+            payload[0],
+            payload[1],
+          ];
+          state["voting"] = [...state["voting"], payload[2], payload[3]];
+          state["finished"] = [...state["finished"], payload[4]];
+        }
         state.status = "succeeded";
       }
     );
@@ -51,7 +63,15 @@ const inventorySlice = createSlice({
   },
   reducers: {
     loadInventory(state, { payload }) {
-      state[payload] = [...state[payload], ...getInvRecords()];
+      const records = getInvRecords();
+      if (payload) {
+        state[payload] = [...state[payload], ...records];
+      } else {
+        // This code will break if inventorypagesize changes and it's here for testing purposes
+        state["unreviewed"] = [...state["unreviewed"], records[0], records[1]];
+        state["voting"] = [...state["voting"], records[2], records[3]];
+        state["finished"] = [...state["finished"], records[4]];
+      }
     },
     removeInventory(state, { payload }) {
       const { type, record } = payload;
