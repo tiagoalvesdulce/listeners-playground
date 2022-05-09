@@ -1,12 +1,44 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
   records: {},
+  status: "idle", // pending, succeeded, failed
 };
+
+function asyncAddRecord(record) {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res(record);
+    }, 1000);
+  });
+}
+
+export const addRecordAsync = createAsyncThunk(
+  "records/addRecordAsync",
+  async (record) => {
+    console.log(record);
+    const response = await asyncAddRecord(record);
+    console.log(response);
+    return response;
+  }
+);
 
 export const recordsSlice = createSlice({
   name: "records",
   initialState,
+  extraReducers: (builder) => {
+    builder.addCase(addRecordAsync.fulfilled, (state, { payload }) => {
+      console.log(state, payload);
+      state.records = {
+        ...state.records,
+        [payload]: { recordInfo: payload },
+      };
+      state.status = "succeeded";
+    });
+    builder.addCase(addRecordAsync.pending, (state) => {
+      state.status = "pending";
+    });
+  },
   reducers: {
     fetchMoreRecords(state) {},
     addBatchRecords(state, { payload }) {
@@ -35,5 +67,6 @@ export const { fetchMoreRecords, saveLastToken, addRecord, removeRecord } =
   recordsSlice.actions;
 
 export const selectRecords = (state) => state.records.records;
+export const selectRecordsStatus = (state) => state.records.status;
 
 export default recordsSlice.reducer;

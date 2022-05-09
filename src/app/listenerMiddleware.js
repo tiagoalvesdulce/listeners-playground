@@ -1,10 +1,14 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
 import {
-  loadInventory,
+  // uncomment line below to test sync actions
+  // loadInventory,
+  loadInventoryAsync,
   selectInventoryByType,
 } from "../packages/inventory/inventorySlice";
 import {
-  addRecord,
+  // uncomment line below to test sync actions
+  // addRecord,
+  addRecordAsync,
   fetchMoreRecords,
   selectRecords,
 } from "../packages/records/recordsSlice";
@@ -32,13 +36,15 @@ listenerMiddleware.startListening({
         tempRecordsList.push(record);
       }
     }
-    tempRecordsList.forEach((r) => listenerApi.dispatch(addRecord(r)));
+    // here you can switch between addRecord and addRecordAsync for the sync/async version
+    tempRecordsList.forEach((r) => listenerApi.dispatch(addRecordAsync(r)));
     if (
       unreviewedRecords.length === inventoryPageSize * fetched &&
       tempRecordsList[tempRecordsList.length - 1] ===
         unreviewedRecords[unreviewedRecords.length - 1]
     ) {
-      listenerApi.dispatch(loadInventory("unreviewed"));
+      // here you can switch between loadInventory and loadInventoryAsync for the sync/async version
+      listenerApi.dispatch(loadInventoryAsync("unreviewed"));
       fetched++;
     }
   },

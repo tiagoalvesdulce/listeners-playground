@@ -5,10 +5,13 @@ import {
   selectRecords,
   fetchMoreRecords,
   addRecord,
+  selectRecordsStatus,
+  addRecordAsync,
 } from "./recordsSlice";
 
 function Records() {
   const records = useSelector(selectRecords);
+  const status = useSelector(selectRecordsStatus);
   const [newRecord, setNewRecord] = useState("");
   const dispatch = useDispatch();
   return (
@@ -35,6 +38,12 @@ function Records() {
           />
           <button onClick={() => dispatch(addRecord(newRecord))}>
             Add individual record
+          </button>
+          <button
+            onClick={() => dispatch(addRecordAsync(newRecord))}
+            disabled={status === "pending"}
+          >
+            {status === "pending" ? "Pending..." : "Add record async"}
           </button>
         </div>
       )}
