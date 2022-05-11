@@ -40,7 +40,6 @@ export const recordsSlice = createSlice({
     });
   },
   reducers: {
-    fetchMoreRecords(state) {},
     addBatchRecords(state, { payload }) {
       const newRecords = payload.reduce(
         (acc, cur) => ({ ...acc, [cur]: { recordInfo: cur } }),
@@ -63,8 +62,7 @@ export const recordsSlice = createSlice({
   },
 });
 
-export const { fetchMoreRecords, saveLastToken, addRecord, removeRecord } =
-  recordsSlice.actions;
+export const { saveLastToken, addRecord, removeRecord } = recordsSlice.actions;
 
 export const selectRecords = (state) => state.records.records;
 export const selectRecordsStatus = (state) => state.records.status;

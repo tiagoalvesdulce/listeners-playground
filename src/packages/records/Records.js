@@ -3,30 +3,42 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   removeRecord,
   selectRecords,
-  fetchMoreRecords,
   addRecord,
   selectRecordsStatus,
   addRecordAsync,
 } from "./recordsSlice";
 
-function Records() {
+function Records({ fetchMoreRecords, statuses, inventory }) {
   const records = useSelector(selectRecords);
+  const list = [];
+  statuses.forEach((st) => list.push(...inventory[st]));
+  const recordsInList = [];
+  list.forEach((l) => {
+    if (records[l]) recordsInList.push(l);
+  });
   const status = useSelector(selectRecordsStatus);
   const [newRecord, setNewRecord] = useState("");
   const dispatch = useDispatch();
   return (
     <div>
-      {records.length === 0 ? (
-        <h1>No records!</h1>
+      {recordsInList.length === 0 ? (
+        <>
+          <h1>No records!</h1>
+          <button onClick={() => dispatch(fetchMoreRecords(statuses))}>
+            Fetch more
+          </button>
+        </>
       ) : (
         <div>
-          {Object.values(records).map((record) => (
-            <div key={record.recordInfo}>
-              <span>{record.recordInfo}</span>
-              <button onClick={() => dispatch(removeRecord(record))}>❌</button>
+          {recordsInList.map((record) => (
+            <div key={records[record].recordInfo}>
+              <span>{records[record].recordInfo}</span>
+              <button onClick={() => dispatch(removeRecord(records[record]))}>
+                ❌
+              </button>
             </div>
           ))}
-          <button onClick={() => dispatch(fetchMoreRecords())}>
+          <button onClick={() => dispatch(fetchMoreRecords(statuses))}>
             Fetch more
           </button>
           <br></br>
